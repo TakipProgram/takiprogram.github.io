@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şube Takip Sistemi</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Şube Takip Sistemi</h1>
+        <!-- Google Maps iframe -->
+        <iframe src="https://www.google.com/maps/d/u/0/embed?mid=1KD82hzwAO1b-i5-Sj83URi8WIf4Kg4c&ll=tr" width="100%" height="480"></iframe>
+        <!-- Form and table here -->
+        <form id="branch-form">
+            <input type="text" id="productName" placeholder="Ürün Adı" required>
+            <input type="text" id="branchName" placeholder="Şube Adı" required>
+            <input type="text" id="contact" placeholder="İletişim" required>
+            <input type="text" id="location" placeholder="Konum" required>
+            <input type="number" id="salesWeight" placeholder="Satış (KG)" required>
+            <input type="number" id="totalAmount" placeholder="Tutar (TL)" required>
+            <input type="number" id="receivedAmount" placeholder="Alınan Tutar (TL)" required>
+            <button type="submit">Şube Ekle</button>
+        </form>
+        <table id="branch-table">
+            <thead>
+                <tr>
+                    <th>İkon</th>
+                    <th>Ürün Adı</th>
+                    <th>Şube Adı</th>
+                    <th>İletişim</th>
+                    <th>Konum</th>
+                    <th>Satış (KG)</th>
+                    <th>Tutar (TL)</th>
+                    <th>Alınan Tutar (TL)</th>
+                    <th>Kalan Tutar (TL)</th>
+                    <th>Tarih</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Şubeler burada listelenecek -->
+            </tbody>
+        </table>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
