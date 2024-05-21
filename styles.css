@@ -1,4 +1,4 @@
-﻿/* styles.css */
+/* styles.css */
 body {
     font-family: 'Arial', sans-serif;
     background: linear-gradient(to right, #00c6ff, #0072ff);
@@ -61,6 +61,7 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
     color: #fff;
+    overflow-x: auto;
 }
 
 table, th, td {
@@ -112,8 +113,31 @@ button.action-btn {
 button.action-btn:hover {
     background: rgba(0, 0, 0, 0.8);
 }
+
 iframe {
     border: 0;
     margin-bottom: 20px;
 }
 
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+
+    form {
+        flex-direction: column;
+    }
+
+    form input, form button {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    th, td {
+        font-size: 14px;
+    }
+
+    h1 {
+        font-size: 2em;
+    }
+}
