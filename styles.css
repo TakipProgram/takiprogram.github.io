@@ -119,13 +119,18 @@ iframe {
     margin-bottom: 20px;
 }
 
-@media (max-width: 768px) {
+@media only screen and (max-width: 600px) {
     .container {
         padding: 10px;
     }
 
+    h1 {
+        font-size: 1.5em;
+    }
+
     form {
         flex-direction: column;
+        align-items: stretch;
     }
 
     form input, form button {
@@ -133,9 +138,11 @@ iframe {
         margin-bottom: 10px;
     }
 
-    th, td {
+    table, th, td {
         font-size: 14px;
     }
+}
+
 
     h1 {
         font-size: 2em;
