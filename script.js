@@ -178,4 +178,9 @@ function animateRow(row) {
     setTimeout(() => {
         row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
         row.style.opacity = 1;
-        row
+        row.style.transform = 'translateY(0)';
+    }, 0);
+}
+
+// Load data when the page is loaded
+window.onload = loadData;
