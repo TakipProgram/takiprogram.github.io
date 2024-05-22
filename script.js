@@ -1,6 +1,7 @@
 document.getElementById('branch-form').addEventListener('submit', function (e) {
-    e.preventDefault();
+    e.preventDefault(); // Formun varsayılan gönderimini engelle
 
+    // Form değerlerini al
     const productName = document.getElementById('productName').value;
     const branchName = document.getElementById('branchName').value;
     const contact = document.getElementById('contact').value;
@@ -12,6 +13,7 @@ document.getElementById('branch-form').addEventListener('submit', function (e) {
     const date = new Date().toLocaleString('tr-TR');
     const iconClass = 'icon green';
 
+    // Yeni şube nesnesi oluştur
     const branch = {
         productName,
         branchName,
@@ -26,10 +28,10 @@ document.getElementById('branch-form').addEventListener('submit', function (e) {
         lastSaleDate: new Date()
     };
 
+    // Şubeyi tabloya ekle
     addBranchToTable(branch);
-    saveData();
-    takeScreenshot();
-    this.reset();
+    saveData(); // Verileri kaydet
+    this.reset(); // Formu sıfırla
 });
 
 function addBranchToTable(branch) {
@@ -57,7 +59,6 @@ function addBranchToTable(branch) {
     `;
 
     tableBody.appendChild(row);
-    animateRow(row);
 }
 
 function makePartialSale(button) {
@@ -74,7 +75,6 @@ function makePartialSale(button) {
     updateDate(row);
     updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
     saveData();
-    takeScreenshot();
 }
 
 function makePartialPayment(button) {
@@ -89,7 +89,6 @@ function makePartialPayment(button) {
     updateDate(row);
     updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
     saveData();
-    takeScreenshot();
 }
 
 function editBranch(button) {
@@ -115,14 +114,12 @@ function editBranch(button) {
     updateDate(row);
     updateIcon(row, newRemainingAmount > 0 ? 'red' : 'green');
     saveData();
-    takeScreenshot();
 }
 
 function deleteBranch(button) {
     const row = button.parentElement.parentElement;
     row.remove();
     saveData();
-    takeScreenshot();
 }
 
 function updateDate(row) {
@@ -162,24 +159,6 @@ function loadData() {
     data.forEach(branch => {
         addBranchToTable(branch);
     });
-}
-
-function takeScreenshot() {
-    html2canvas(document.body).then(canvas => {
-        canvas.toBlob(blob => {
-            saveAs(blob, `screenshot-${new Date().toISOString()}.jpg`);
-        });
-    });
-}
-
-function animateRow(row) {
-    row.style.opacity = 0;
-    row.style.transform = 'translateY(-20px)';
-    setTimeout(() => {
-        row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        row.style.opacity = 1;
-        row.style.transform = 'translateY(0)';
-    }, 0);
 }
 
 // Load data when the page is loaded
