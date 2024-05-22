@@ -61,7 +61,6 @@ table {
     border-collapse: collapse;
     margin-top: 20px;
     color: #fff;
-    overflow-x: auto;
 }
 
 table, th, td {
@@ -140,11 +139,5 @@ iframe {
 
     table, th, td {
         font-size: 14px;
-    }
-}
-
-
-    h1 {
-        font-size: 2em;
     }
 }
