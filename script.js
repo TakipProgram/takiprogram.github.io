@@ -30,7 +30,7 @@ document.getElementById('branch-form').addEventListener('submit', function (e) {
 
     // Şubeyi tabloya ekle
     addBranchToTable(branch);
-    saveData(); // Verileri kaydet
+    saveData(branch); // Verileri kaydet
     this.reset(); // Formu sıfırla
 });
 
@@ -74,7 +74,7 @@ function makePartialSale(button) {
 
     updateDate(row);
     updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
-    saveData();
+    saveData(rowToBranch(row)); // Verileri kaydet
 }
 
 function makePartialPayment(button) {
@@ -88,7 +88,7 @@ function makePartialPayment(button) {
 
     updateDate(row);
     updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
-    saveData();
+    saveData(rowToBranch(row)); // Verileri kaydet
 }
 
 function editBranch(button) {
@@ -103,63 +103,26 @@ function editBranch(button) {
     const newRemainingAmount = newTotalAmount - newReceivedAmount;
 
     row.cells[1].textContent = newProductName;
-    row.cells[2].textContent = newBranchName;
-    row.cells[3].textContent = newContact;
-    row.cells[4].textContent = newLocation;
-    row.cells[5].textContent = newSalesWeight;
-    row.cells[6].textContent = newTotalAmount;
-    row.cells[7].textContent = newReceivedAmount;
-    row.cells[8].textContent = newRemainingAmount;
+    row.cells[2].Maalesef, GitHub Pages doğrudan sunucu taraflı veri işleme veya veri saklama işlevselliği sunmadığından, yerel dosya sistemine veri yazmak ve bu verileri diğer kullanıcılara sunmak mümkün değildir. Ancak, GitHub Pages'de barındırılan statik bir site için, herkese açık bir veritabanı kullanarak (örneğin Firebase veya Google Sheets API) veri saklama ve paylaşma işlemlerini gerçekleştirebilirsiniz. Bu sayede veriler tüm kullanıcılarda senkronize olur ve herkes verileri görebilir.
 
-    updateDate(row);
-    updateIcon(row, newRemainingAmount > 0 ? 'red' : 'green');
-    saveData();
-}
+**Firebase Firestore ile Örnek Çözüm:**
 
-function deleteBranch(button) {
-    const row = button.parentElement.parentElement;
-    row.remove();
-    saveData();
-}
+1. **Firebase Firestore kullanarak bir proje oluşturun.**
 
-function updateDate(row) {
-    const dateCell = row.cells[9];
-    const newDate = new Date().toLocaleString('tr-TR');
-    dateCell.textContent = newDate;
-}
+2. **Firebase SDK'yı projeye dahil edin.**
 
-function updateIcon(row, color) {
-    const icon = row.cells[0].querySelector('.icon');
-    icon.className = `icon ${color}`;
-}
+**firebase.js:**
+```javascript
+// Firebase yapılandırması
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
 
-function saveData() {
-    const tableBody = document.querySelector('#branch-table tbody');
-    const rows = Array.from(tableBody.rows);
-    const data = rows.map(row => {
-        return {
-            productName: row.cells[1].textContent,
-            branchName: row.cells[2].textContent,
-            contact: row.cells[3].textContent,
-            location: row.cells[4].textContent,
-            salesWeight: parseFloat(row.cells[5].textContent),
-            totalAmount: parseFloat(row.cells[6].textContent),
-            receivedAmount: parseFloat(row.cells[7].textContent),
-            remainingAmount: parseFloat(row.cells[8].textContent),
-            date: row.cells[9].textContent,
-            iconClass: row.cells[0].querySelector('.icon').className
-        };
-    });
-
-    localStorage.setItem('branchData', JSON.stringify(data));
-}
-
-function loadData() {
-    const data = JSON.parse(localStorage.getItem('branchData')) || [];
-    data.forEach(branch => {
-        addBranchToTable(branch);
-    });
-}
-
-// Load data when the page is loaded
-window.onload = loadData;
+// Firebase başlatma
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
