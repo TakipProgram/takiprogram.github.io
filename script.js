@@ -28,11 +28,22 @@ document.getElementById('branch-form').addEventListener('submit', function (e) {
         lastSaleDate: new Date()
     };
 
-    // Şubeyi tabloya ekle
-    addBranchToTable(branch);
-    saveData(branch); // Verileri kaydet
-    this.reset(); // Formu sıfırla
+    // Veritabanına ekle
+    db.collection('branches').add(branch).then(() => {
+        addBranchToTable(branch);
+        this.reset();
+    }).catch(error => {
+        console.error("Error adding document: ", error);
+    });
 });
+
+function loadData() {
+    db.collection('branches').get().then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            addBranchToTable(doc.data());
+        });
+    });
+}
 
 function addBranchToTable(branch) {
     const tableBody = document.querySelector('#branch-table tbody');
@@ -61,68 +72,5 @@ function addBranchToTable(branch) {
     tableBody.appendChild(row);
 }
 
-function makePartialSale(button) {
-    const row = button.parentElement.parentElement;
-    const salesWeight = parseFloat(prompt("Satış miktarını girin (KG):"));
-    const totalAmount = parseFloat(row.cells[6].textContent);
-    const receivedAmount = parseFloat(row.cells[7].textContent) + (salesWeight * (totalAmount / parseFloat(row.cells[5].textContent)));
-    const remainingAmount = totalAmount - receivedAmount;
-
-    row.cells[5].textContent = parseFloat(row.cells[5].textContent) - salesWeight;
-    row.cells[7].textContent = receivedAmount;
-    row.cells[8].textContent = remainingAmount;
-
-    updateDate(row);
-    updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
-    saveData(rowToBranch(row)); // Verileri kaydet
-}
-
-function makePartialPayment(button) {
-    const row = button.parentElement.parentElement;
-    const paymentAmount = parseFloat(prompt("Ödeme miktarını girin (TL):"));
-    const receivedAmount = parseFloat(row.cells[7].textContent) + paymentAmount;
-    const remainingAmount = parseFloat(row.cells[8].textContent) - paymentAmount;
-
-    row.cells[7].textContent = receivedAmount;
-    row.cells[8].textContent = remainingAmount;
-
-    updateDate(row);
-    updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
-    saveData(rowToBranch(row)); // Verileri kaydet
-}
-
-function editBranch(button) {
-    const row = button.parentElement.parentElement;
-    const newProductName = prompt("Yeni Ürün Adı:", row.cells[1].textContent);
-    const newBranchName = prompt("Yeni Şube Adı:", row.cells[2].textContent);
-    const newContact = prompt("Yeni İletişim:", row.cells[3].textContent);
-    const newLocation = prompt("Yeni Konum:", row.cells[4].textContent);
-    const newSalesWeight = parseFloat(prompt("Yeni Satış (KG):", row.cells[5].textContent));
-    const newTotalAmount = parseFloat(prompt("Yeni Tutar (TL):", row.cells[6].textContent));
-    const newReceivedAmount = parseFloat(prompt("Yeni Alınan Tutar (TL):", row.cells[7].textContent));
-    const newRemainingAmount = newTotalAmount - newReceivedAmount;
-
-    row.cells[1].textContent = newProductName;
-    row.cells[2].Maalesef, GitHub Pages doğrudan sunucu taraflı veri işleme veya veri saklama işlevselliği sunmadığından, yerel dosya sistemine veri yazmak ve bu verileri diğer kullanıcılara sunmak mümkün değildir. Ancak, GitHub Pages'de barındırılan statik bir site için, herkese açık bir veritabanı kullanarak (örneğin Firebase veya Google Sheets API) veri saklama ve paylaşma işlemlerini gerçekleştirebilirsiniz. Bu sayede veriler tüm kullanıcılarda senkronize olur ve herkes verileri görebilir.
-
-**Firebase Firestore ile Örnek Çözüm:**
-
-1. **Firebase Firestore kullanarak bir proje oluşturun.**
-
-2. **Firebase SDK'yı projeye dahil edin.**
-
-**firebase.js:**
-```javascript
-// Firebase yapılandırması
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
-
-// Firebase başlatma
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// Sayfa yüklendiğinde verileri yükle
+window.onload = loadData;
