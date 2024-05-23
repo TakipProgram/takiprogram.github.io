@@ -1,49 +1,30 @@
-// Firebase yapılandırması
-const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
-};
-
-// Firebase başlatma
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+const API_URL = 'http://localhost:3000'; // Sunucu URL'si
 
 document.getElementById('branch-form').addEventListener('submit', function (e) {
     e.preventDefault(); // Formun varsayılan gönderimini engelle
 
     // Form değerlerini al
-    const productName = document.getElementById('productName').value;
-    const branchName = document.getElementById('branchName').value;
-    const contact = document.getElementById('contact').value;
-    const location = document.getElementById('location').value;
-    const salesWeight = parseFloat(document.getElementById('salesWeight').value);
-    const totalAmount = parseFloat(document.getElementById('totalAmount').value);
-    const receivedAmount = parseFloat(document.getElementById('receivedAmount').value);
-    const remainingAmount = totalAmount - receivedAmount;
-    const date = new Date().toLocaleString('tr-TR');
-    const iconClass = 'icon green';
-
-    // Yeni şube nesnesi oluştur
     const branch = {
-        productName,
-        branchName,
-        contact,
-        location,
-        salesWeight,
-        totalAmount,
-        receivedAmount,
-        remainingAmount,
-        date,
-        iconClass,
-        lastSaleDate: new Date()
+        productName: document.getElementById('productName').value,
+        branchName: document.getElementById('branchName').value,
+        contact: document.getElementById('contact').value,
+        location: document.getElementById('location').value,
+        salesWeight: parseFloat(document.getElementById('salesWeight').value),
+        totalAmount: parseFloat(document.getElementById('totalAmount').value),
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        remainingAmount: totalAmount - receivedAmount,
+        date: new Date().toLocaleString('tr-TR'),
+        iconClass: 'icon green'
     };
 
     // Veritabanına ekle
-    db.collection('branches').add(branch).then(() => {
+    fetch(`${API_URL}/branches`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(branch)
+    }).then(response => response.text()).then(() => {
         addBranchToTable(branch);
         this.reset();
     }).catch(error => {
@@ -52,10 +33,10 @@ document.getElementById('branch-form').addEventListener('submit', function (e) {
 });
 
 function loadData() {
-    db.collection('branches').get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            addBranchToTable(doc.data());
-        });
+    fetch(`${API_URL}/branches`).then(response => response.json()).then(data => {
+        data.forEach(branch => addBranchToTable(branch));
+    }).catch(error => {
+        console.error("Error loading data: ", error);
     });
 }
 
@@ -84,92 +65,6 @@ function addBranchToTable(branch) {
     `;
 
     tableBody.appendChild(row);
-}
-
-function makePartialSale(button) {
-    const row = button.parentElement.parentElement;
-    const salesWeight = parseFloat(prompt("Satış miktarını girin (KG):"));
-    const totalAmount = parseFloat(row.cells[6].textContent);
-    const receivedAmount = parseFloat(row.cells[7].textContent) + (salesWeight * (totalAmount / parseFloat(row.cells[5].textContent)));
-    const remainingAmount = totalAmount - receivedAmount;
-
-    row.cells[5].textContent = parseFloat(row.cells[5].textContent) - salesWeight;
-    row.cells[7].textContent = receivedAmount;
-    row.cells[8].textContent = remainingAmount;
-
-    updateDate(row);
-    updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
-    saveData(rowToBranch(row)); // Verileri kaydet
-}
-
-function makePartialPayment(button) {
-    const row = button.parentElement.parentElement;
-    const paymentAmount = parseFloat(prompt("Ödeme miktarını girin (TL):"));
-    const receivedAmount = parseFloat(row.cells[7].textContent) + paymentAmount;
-    const remainingAmount = parseFloat(row.cells[8].textContent) - paymentAmount;
-
-    row.cells[7].textContent = receivedAmount;
-    row.cells[8].textContent = remainingAmount;
-
-    updateDate(row);
-    updateIcon(row, remainingAmount > 0 ? 'red' : 'green');
-    saveData(rowToBranch(row)); // Verileri kaydet
-}
-
-function editBranch(button) {
-    const row = button.parentElement.parentElement;
-    const newProductName = prompt("Yeni Ürün Adı:", row.cells[1].textContent);
-    const newBranchName = prompt("Yeni Şube Adı:", row.cells[2].textContent);
-    const newContact = prompt("Yeni İletişim:", row.cells[3].textContent);
-    const newLocation = prompt("Yeni Konum:", row.cells[4].textContent);
-    const newSalesWeight = parseFloat(prompt("Yeni Satış (KG):", row.cells[5].textContent));
-    const newTotalAmount = parseFloat(prompt("Yeni Tutar (TL):", row.cells[6].textContent));
-    const newReceivedAmount = parseFloat(prompt("Yeni Alınan Tutar (TL):", row.cells[7].textContent));
-    const newRemainingAmount = newTotalAmount - newReceivedAmount;
-
-    row.cells[1].textContent = newProductName;
-    row.cells[2].textContent = newBranchName;
-    row.cells[3].textContent = newContact;
-    row.cells[4].textContent = newLocation;
-    row.cells[5].textContent = newSalesWeight;
-    row.cells[6].textContent = newTotalAmount;
-    row.cells[7].textContent = newReceivedAmount;
-    row.cells[8].textContent = newRemainingAmount;
-
-    updateDate(row);
-    updateIcon(row, newRemainingAmount > 0 ? 'red' : 'green');
-    saveData(rowToBranch(row)); // Verileri kaydet
-}
-
-function deleteBranch(button) {
-    const row = button.parentElement.parentElement;
-    row.remove();
-    saveData(); // Verileri kaydet
-}
-
-function updateDate(row) {
-    const dateCell = row.cells[9];
-    const newDate = new Date().toLocaleString('tr-TR');
-    dateCell.textContent = newDate;
-}
-
-function updateIcon(row, color) {
-    const icon = row.cells[0].querySelector('.icon');
-    icon.className = `icon ${color}`;
-}
-
-function saveData(branch) {
-    db.collection('branches').add(branch).catch(error => {
-        console.error("Error saving document: ", error);
-    });
-}
-
-function loadData() {
-    db.collection('branches').get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-            addBranchToTable(doc.data());
-        });
-    });
 }
 
 // Sayfa yüklendiğinde verileri yükle
